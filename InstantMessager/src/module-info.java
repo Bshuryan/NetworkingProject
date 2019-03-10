@@ -1,0 +1,9 @@
+/**
+ * 
+ */
+/**
+ * @author bshuryan
+ *
+ */
+module instantMessager {
+}
