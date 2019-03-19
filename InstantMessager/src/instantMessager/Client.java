@@ -9,21 +9,17 @@ public class Client {
 	private Socket link;
 	private ObjectOutputStream output;
 	private ObjectInputStream input;
+	private int port;
+	private String usn;
 	
 	
 	
 	
-	public Client(int port, String IP_address)
+	public Client(String usn, int port, String IP)
 	{
-		try {
-			IP = IP_address;
-			link = new Socket(InetAddress.getByName(IP), port);
-			sendMessage("Connection established!");
-	}
-		catch(IOException e) {
-			System.out.println("Error: Unable to connect.");
-		}
-		
+		this.port = port;
+		this.usn = usn;
+		this.IP = IP;
 		}
 	
 		
@@ -43,12 +39,14 @@ public void sendMessage(String text) {
 
 
 
-public void run() throws IOException {
+public void run() {
 	
-	output = new ObjectOutputStream(link.getOutputStream());
-	input = new ObjectInputStream(link.getInputStream());
+	//output = new ObjectOutputStream(link.getOutputStream());
+	//input = new ObjectInputStream(link.getInputStream());
 	
-	String text = "Welcome!";
+	connect();
+	
+	/*String text = "Welcome!";
 	sendMessage(text);
 	
 	try {
@@ -77,7 +75,7 @@ public void run() throws IOException {
 	finally {
 		closeConnection();
 	}
-
+*/
 }
 
 
@@ -98,15 +96,25 @@ public void closeConnection() {
 	}
 }
 
-
-
-public static void main(String args[]) throws IOException {
-	
-	Client testClient = new Client(156, "127.0.0.1");
-	testClient.run();
-	
+public void connect()
+{
+	System.out.println("Trying to connect...");
+	try {
+		
+		link = new Socket(InetAddress.getByName(IP), port); 
+		
+		sendMessage("Connection established!");
+}
+	catch(IOException e) {
+		
+		System.out.println("Error: Client unable to connect.");
+	}
 	
 }
+
+
+
+
 
 
 }

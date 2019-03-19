@@ -9,32 +9,29 @@ public class Server {
 	private Socket link;
 	private ObjectOutputStream output;
 	private ObjectInputStream input;
+	private String usn;
+	private int port;
 	
-	public Server(int port) {
+	public Server(String usn, int port) {
 		
-		try 
-		 {
-			server = new ServerSocket(port);
-			link = server.accept();
-			sendMessage("Connection established!");
-			
-			
-			
-		 }
-		
-		catch(IOException e)
-		{
-			System.out.println("Connection unable to be established.");
-		}
+		this.usn = usn;
+		this.port = port;
+	
 	}
 	
 	public void run() throws IOException {
 		
-		output = new ObjectOutputStream(link.getOutputStream());
-		input = new ObjectInputStream(link.getInputStream());
+		server = new ServerSocket(port, 100);
 		
-		String text = "Welcome!";
+		//output = new ObjectOutputStream(link.getOutputStream());
+		//input = new ObjectInputStream(link.getInputStream());
+		
+		connect();
+		
+		/*String text = "Welcome!";
 		sendMessage(text);
+		
+		
 		
 		try {
 		
@@ -56,12 +53,12 @@ public class Server {
 			
 		}
 			
-		}
+		} 
 		}
 		
 		finally {
 			closeConnection();
-		}
+		} */
 	
 	}
 	
@@ -100,13 +97,25 @@ public class Server {
 		}
 	}
 	
-	public static void main(String args[]) throws IOException {
+	
 		
-		Server testServer = new Server(156);
-		testServer.run();
+	public void connect() {
 		
+		System.out.println("Waiting...");
+		try {
 		
+		link = server.accept();
+		System.out.println("Connected!");
+		}
+		
+		catch(IOException e) {
+			System.out.println("Error: server unable to connect");
+		}
 	}
+	
+	
+	
+	
 	
 	
 	
