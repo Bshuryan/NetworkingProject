@@ -5,5 +5,5 @@
  * @author bshuryan
  *
  */
-module instantMessager {
-}
+//module instantMessager {
+//}
