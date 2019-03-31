@@ -77,7 +77,9 @@ public class Server extends JFrame {
 	}
 	
 	public void run(){
+		
 		try{
+			
 			server = new ServerSocket(6000); 
 			//setting up TCP connection
 			connect();
@@ -92,14 +94,10 @@ public class Server extends JFrame {
 					
 				
 						
-						while(isOpen) {
+					while(isOpen) {
 							
 						try {
 						received = (String)incoming.readObject();
-						
-						//if(received == "************* Connection has been closed *************")
-							//isOpen = false;
-							
 						displayClient(received);
 						}
 							
@@ -118,6 +116,7 @@ public class Server extends JFrame {
 				catch(EOFException e){
 					e.printStackTrace();
 					isOpen = false;
+					//when the other user ends connection this executes
 					
 					}
 					

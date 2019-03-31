@@ -92,22 +92,20 @@ public class Client extends JFrame{
 			
 			
 			while(isOpen) {
-			
-			try {
-			received = (String)incoming.readObject();
-			//waits for text to be sent, stores as string
-			
-			//if(received == "************* Connection has been closed **************")
-				//isOpen = false;
-			
-			displayServer(received);
-			//displays stored text		
+				
+				try {
+				received = (String)incoming.readObject();
+				//waits for text to be sent, stores as string
+				
+				
+				displayServer(received);
+				//displays stored text		
+					}
+				catch(ClassNotFoundException e){
+						displayClient("Error: Unable to read");
+					}
+				
 				}
-			catch(ClassNotFoundException e){
-					displayClient("Error: Unable to read");
-				}
-			
-			}
 			
 			
 		}
@@ -115,7 +113,7 @@ public class Client extends JFrame{
 		catch(EOFException e){
 			e.printStackTrace();
 			isOpen = false;
-			
+			//when the other user ends connection this executes
 			
 		}
 		
