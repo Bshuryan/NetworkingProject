@@ -11,12 +11,14 @@ public class Server extends JFrame {
 	private JTextField textbox;
 	private JTextArea serverLog;
 	private JButton send;
+	private JButton disconnect;
 	
 	private ObjectOutputStream outgoing;
 	private ObjectInputStream incoming;
 	private ServerSocket server;
 	private Socket link;
 	private String received;
+	private boolean isOpen;
 	
 	
 	
@@ -36,24 +38,42 @@ public class Server extends JFrame {
 		
 		send.addActionListener(new ActionListener(){
 		//on pressing send, will get text currently in the textbox and display it on both server and client's end
-			public void actionPerformed(ActionEvent event){
+			public void actionPerformed(ActionEvent e){
 			
-			String text = textbox.getText();
-			send(text);
-			textbox.setText("");
-			
+				if(isOpen) {
+					String text = textbox.getText();
+					send(text);
+					textbox.setText("");
+				}
+				else
+					displayServer("Error: Connection is not open!");
+				
 		}
+			
+			
 	}
 );
-		
-		
+		//button that will void the connection between two users
+		disconnect = new JButton("DISCONNECT");
+		disconnect.setBounds(500,5, 95,35);
+		disconnect.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				disconnect();
+				
+			}
+			
+		});
 		
 		serverLog = new JTextArea();
 		serverLog.setEditable(false);
 		add(new JScrollPane(serverLog));
+		
+		serverLog.add(disconnect);
 		setSize(600, 600); 
 		setVisible(true);
 		//where messages will be displayed (users not able to edit)
+		isOpen = false;
 	}
 	
 	public void run(){
@@ -72,12 +92,15 @@ public class Server extends JFrame {
 					
 				
 						
-						do {
+						while(isOpen) {
 							
 						try {
 						received = (String)incoming.readObject();
+						
+						//if(received == "************* Connection has been closed *************")
+							//isOpen = false;
 							
-								displayClient(received);
+						displayClient(received);
 						}
 							
 						catch(ClassNotFoundException e){
@@ -85,10 +108,7 @@ public class Server extends JFrame {
 							}
 						
 						}
-						while(!received.equals("TERMINATE"));
 						
-						//waits for messages to be sent over the input stream, if receives a message that equals
-						//TERMINATE then closes the connection
 						
 					}
 					
@@ -97,6 +117,7 @@ public class Server extends JFrame {
 					
 				catch(EOFException e){
 					e.printStackTrace();
+					isOpen = false;
 					
 					}
 					
@@ -105,11 +126,7 @@ public class Server extends JFrame {
 					e.printStackTrace();
 				} 
 				
-				finally
-				{
-					//reaches here if receives the word TERMINATE on the input stream
-					disconnect(); 
-				}
+			
 			}
 		
 
@@ -120,6 +137,7 @@ public class Server extends JFrame {
 		//waiting for another socket to connect
 		link = server.accept();
 		//another socket has connected on same port #
+		isOpen = true;
 		
 	}
 	
@@ -127,6 +145,8 @@ public class Server extends JFrame {
 	
 	
 	private void send(String message){
+		
+	
 		try{
 			
 			
@@ -138,9 +158,12 @@ public class Server extends JFrame {
 		}
 		catch(IOException e){
 			
-			displayServer("Error: Unable to send. Please try again.");
+			e.printStackTrace();
 		}
+		
 	}
+		
+	
 	
 	
 	
@@ -158,13 +181,15 @@ public class Server extends JFrame {
 	
 	private void display(String text) {
 		
-		serverLog.append(text);
+		serverLog.append(text+"\n");
 	}
 	
 	
 	public void disconnect(){
 		
-		display("************* Connection has been closed *************");
+		
+		send("************* Connection has been closed **************");
+		
 		
 		try{
 			outgoing.close(); 
@@ -172,12 +197,13 @@ public class Server extends JFrame {
 			//closes streams
 			link.close(); 
 			//closes socket
+			isOpen = false;
 			
 		}
 		
 		catch(IOException e)
 		{
-			displayServer("Error: Unable to disconnect");
+			e.printStackTrace();
 		}
 	}
 	

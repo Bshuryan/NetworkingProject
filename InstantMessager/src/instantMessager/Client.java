@@ -13,11 +13,13 @@ public class Client extends JFrame{
 	private JTextField textbox;
 	private JTextArea clientLog;
 	private JButton send;
+	private JButton disconnect;
 	private ObjectOutputStream outgoing;
 	private ObjectInputStream incoming;
 	private String received;
 	private String IP;
 	private Socket link;
+	private boolean isOpen;
 	
 	
 	public Client(String IP){
@@ -41,22 +43,39 @@ public class Client extends JFrame{
 		
 			public void actionPerformed(ActionEvent event){
 			//gets text and sends to server when button is pressed
-			String text = textbox.getText();
-			send(text);
-			textbox.setText("");
+				
+			if(isOpen) {
+				String text = textbox.getText();
+				send(text);
+				textbox.setText("");
+			}
+			else
+				displayClient("Error: Connection is not open!");
 			
 		}
 	}
 );
 		
-		
+		disconnect = new JButton("DISCONNECT");
+		disconnect.setBounds(500,5, 95,35);
+		disconnect.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				disconnect();
+				
+			}
+			
+		});
 		
 		clientLog = new JTextArea();
 		clientLog.setEditable(false);
 		add(new JScrollPane(clientLog));
+		clientLog.add(disconnect);
 		setSize(600, 600); 
 		setVisible(true);
 		//where the log of the conversation will be kept
+		
+		isOpen = false;
 	}
 	
 	
@@ -70,11 +89,17 @@ public class Client extends JFrame{
 			outgoing = new ObjectOutputStream(link.getOutputStream());
 			incoming = new ObjectInputStream(link.getInputStream());
 			//sets up input/output streams to get text from server or push text to server 
-			do {
+			
+			
+			while(isOpen) {
 			
 			try {
 			received = (String)incoming.readObject();
-			//waits for text to be sent, stores as string	
+			//waits for text to be sent, stores as string
+			
+			//if(received == "************* Connection has been closed **************")
+				//isOpen = false;
+			
 			displayServer(received);
 			//displays stored text		
 				}
@@ -83,28 +108,23 @@ public class Client extends JFrame{
 				}
 			
 			}
-			while(!received.equals("TERMINATE"));
-			//if receives the message TERMINATE then jumps to finally block
 			
 			
 		}
 		
 		catch(EOFException e){
 			e.printStackTrace();
+			isOpen = false;
 			
 			
 		}
 		
 		catch(IOException e){
-			displayClient("An error has occurred");
+			e.printStackTrace();
 		}
 		
 		
-		finally
-		{
-			disconnect();
-			//jumps here after recieving text saying TERMINATE, which then tries to close the connection
-		}
+		
 	}
 	
 	
@@ -114,6 +134,8 @@ public class Client extends JFrame{
 		//sets up new client socket with their specified IP, port #
 		displayClient("------Connection Established------");
 		//reaches here after successfully connecting to serversocket on same port #
+		
+		isOpen = true;
 	}
 	
 	
@@ -125,16 +147,22 @@ public class Client extends JFrame{
 	
 	
 	private void send(String text){
+		
+		
 		try{
 			outgoing.writeObject(text);
 			//writes object to output stream
 			displayClient(text);
 			//displays the message client just sent in conversation log
+		
 			
 		}catch(IOException e){
-			clientLog.append("Error: Unable to send");
+			e.printStackTrace();
 		}
+		
 	}
+		
+	
 	
 	
 	private void displayClient(String message){
@@ -152,13 +180,13 @@ public class Client extends JFrame{
 	
 	private void display(String message) {
 		
-		clientLog.append(message);
+		clientLog.append(message+"\n");
 	}
 		
 	private void disconnect(){
-		//called when recieves TERMINATE
+		//called when disconnect button pressed
+		send("************* Connection has been closed *************");
 		
-		display("************* Connection has been closed *************");
 		//notifies that connection has closed
 		try{
 			
@@ -168,8 +196,10 @@ public class Client extends JFrame{
 			link.close();
 			//closes socket
 			
+			isOpen = false;
+			
 		}catch(IOException e){
-			clientLog.append("Error: Unable to disconnect.");
+			e.printStackTrace();
 		}
 	}
 	
