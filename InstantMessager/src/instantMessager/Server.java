@@ -55,7 +55,7 @@ public class Server extends JFrame {
 );
 		//button that will void the connection between two users
 		disconnect = new JButton("DISCONNECT");
-		disconnect.setBounds(500,5, 95,35);
+		disconnect.setBounds(500,5, 120,35);
 		disconnect.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
@@ -75,7 +75,15 @@ public class Server extends JFrame {
 		//where messages will be displayed (users not able to edit)
 		isOpen = false;
 	}
-	
+	private void connect() throws IOException{
+		
+		displayServer("------Connecting------");
+		//waiting for another socket to connect
+		link = server.accept();
+		//another socket has connected on same port #
+		isOpen = true;
+		
+	}
 	public void run(){
 		
 		try{
@@ -130,19 +138,6 @@ public class Server extends JFrame {
 		
 
 	
-	private void connect() throws IOException{
-		
-		displayServer("------Connecting------");
-		//waiting for another socket to connect
-		link = server.accept();
-		//another socket has connected on same port #
-		isOpen = true;
-		
-	}
-	
-
-	
-	
 	private void send(String message){
 		
 	
@@ -162,9 +157,6 @@ public class Server extends JFrame {
 		
 	}
 		
-	
-	
-	
 	
 	private void displayClient(String text){
 		//displays messages sent by client

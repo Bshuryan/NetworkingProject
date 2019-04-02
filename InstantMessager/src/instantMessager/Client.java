@@ -30,7 +30,7 @@ public class Client extends JFrame{
 		textbox = new JTextField(20);
 		textbox.setEditable(true);
 		add(textbox);
-		//textbox where user will type messages to send
+		//text box where user will type messages to send
 	
 		textbox.setBounds(2,516,590, 30);
 		Border border = BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1);
@@ -57,7 +57,7 @@ public class Client extends JFrame{
 );
 		
 		disconnect = new JButton("DISCONNECT");
-		disconnect.setBounds(500,5, 95,35);
+		disconnect.setBounds(500,5, 120,35);
 		disconnect.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
@@ -83,7 +83,7 @@ public class Client extends JFrame{
 		try{
 
 			connect();
-			//tries to connect to a serversocket on the same port
+			//tries to connect to a server socket on the same port
 			displayClient("Success!");
 			
 			outgoing = new ObjectOutputStream(link.getOutputStream());
@@ -131,7 +131,7 @@ public class Client extends JFrame{
 		link = new Socket(IP, 6000);
 		//sets up new client socket with their specified IP, port #
 		displayClient("------Connection Established------");
-		//reaches here after successfully connecting to serversocket on same port #
+		//reaches here after successfully connecting to server socket on same port #
 		
 		isOpen = true;
 	}
